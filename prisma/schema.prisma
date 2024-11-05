@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  name      String
+  phone     String
+  role      String    @default("User")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+  restaurant Restaurant?
+}
+
+model Restaurant {
+  id          String    @id @default(uuid())
+  name        String
+  location    String
+  bookingLink String    @unique
+  adminId     String    @unique
+  admin       User      @relation(fields: [adminId], references: [id])
+  bookings    Booking[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Booking {
+  id            String     @id @default(uuid())
+  date          DateTime
+  time          String
+  guests        Int
+  status        String     @default("Pending")
+  restaurantId  String
+  restaurant    Restaurant @relation(fields: [restaurantId], references: [id])
+  userId        String
+  user          User       @relation(fields: [userId], references: [id])
+  specialRequests String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
